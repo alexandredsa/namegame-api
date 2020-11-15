@@ -3,10 +3,8 @@ package consume
 import (
 	"encoding/json"
 
-	"api.namegame.com/socket/events"
-	"api.namegame.com/socket/events/produce"
-
 	"api.namegame.com/domains"
+	"api.namegame.com/socket/events"
 
 	"api.namegame.com/repositories"
 	"api.namegame.com/socket/data"
@@ -19,7 +17,7 @@ type RoomCreate struct {
 	ScoreboardRepository repositories.ScoreboardRepository
 }
 
-func (r *RoomCreate) Bind(GameContext data.GameContext) (string, func(socketio.Conn, string)) {
+func (r RoomCreate) Bind(GameContext data.GameContext) (string, func(socketio.Conn, string)) {
 	return events.ROOM_CREATE_EVENT, func(s socketio.Conn, msg string) {
 		roomCreateMessage := messages.RoomCreate{}
 		err := json.Unmarshal([]byte(msg), roomCreateMessage)
@@ -39,7 +37,6 @@ func (r *RoomCreate) Bind(GameContext data.GameContext) (string, func(socketio.C
 		r.RoomStateRepository.Add(roomState)
 		r.ScoreboardRepository.Add(scoreboard)
 
-		produce.RoomState(room)
 		roomStateMessageBytes, err := json.Marshal(roomState)
 
 		if err != nil {

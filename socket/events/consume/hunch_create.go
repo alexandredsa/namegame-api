@@ -8,7 +8,7 @@ import (
 
 type HunchCreate struct{}
 
-func (h *HunchCreate) Bind(GameContext data.GameContext) (string, func(socketio.Conn, string)) {
+func (h HunchCreate) Bind(GameContext data.GameContext) (string, func(socketio.Conn, string)) {
 	return events.HUNCH_CREATE_EVENT, func(socketio.Conn, string) {
 
 	}
