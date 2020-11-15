@@ -8,7 +8,7 @@ import (
 type PlayerStateUpdate struct{}
 
 func (p *PlayerStateUpdate) Bind(GameContext data.GameContext) (string, func(socketio.Conn, string)) {
-	return "PLAYER_STATE_UPDATE", func(socketio.Conn, string) {
+	return "PLAYER_STATE_UPDATE", func(s socketio.Conn, msg string) {
 
 	}
 }

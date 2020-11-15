@@ -59,7 +59,6 @@
 - `ROOM_CREATE`
 ```
 {
-    "id": "6dcb9970-53ca-493f-876a-61dca6d4de46",  
     "username": "EdilsonCapetinha"
 }
 ```

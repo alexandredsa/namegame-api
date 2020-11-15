@@ -1,6 +1,10 @@
 package domains
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
+import (
+	"math/rand"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
 type Question struct {
 	Name   string
@@ -22,4 +26,14 @@ type Winner struct {
 type RoomState struct {
 	Code  string
 	Round Round
+}
+
+func (rs RoomState) UpdateCode() {
+	var letterRunes = []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+
+	b := make([]rune, 6)
+	for i := range b {
+		b[i] = letterRunes[rand.Intn(len(letterRunes))]
+	}
+	rs.Code = string(b)
 }

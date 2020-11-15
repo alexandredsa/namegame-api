@@ -8,7 +8,7 @@ import (
 type RoomJoin struct{}
 
 func (r *RoomJoin) Bind(GameContext data.GameContext) (string, func(socketio.Conn, string)) {
-	return "ROOM_JOIN", func(socketio.Conn, string) {
+	return "ROOM_JOIN", func(s socketio.Conn, msg string) {
 
 	}
 }
