@@ -1,13 +1,13 @@
 package consume
 
 import (
-	"api.namegame.com/socket"
+	"api.namegame.com/socket/data"
 	socketio "github.com/googollee/go-socket.io"
 )
 
 type RoomJoin struct{}
 
-func (r *RoomJoin) Bind(GameContext socket.GameContext) (string, func(socketio.Conn, string)) {
+func (r *RoomJoin) Bind(GameContext data.GameContext) (string, func(socketio.Conn, string)) {
 	return "ROOM_JOIN", func(socketio.Conn, string) {
 
 	}

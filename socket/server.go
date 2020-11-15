@@ -5,11 +5,13 @@ import (
 	"log"
 	"net/http"
 
+	"api.namegame.com/socket/events/consume"
 	socketio "github.com/googollee/go-socket.io"
 )
 
 type Server struct {
-	Sessions map[string]GameContext
+	Sessions  map[string]GameContext
+	Listeners []consume.EventConsumer
 }
 
 func (s *Server) Start() {
@@ -34,22 +36,9 @@ func (s *Server) bindEvents(server *socketio.Server) {
 		return nil
 	})
 
-	server.OnEvent("/", "notice", func(s socketio.Conn, msg string) {
-		fmt.Println("notice:", msg)
-		s.Emit("reply", "have "+msg)
-	})
-
-	server.OnEvent("/chat", "msg", func(s socketio.Conn, msg string) string {
-		s.SetContext(msg)
-		return "recv " + msg
-	})
-
-	server.OnEvent("/", "bye", func(s socketio.Conn) string {
-		last := s.Context().(string)
-		s.Emit("bye", last)
-		s.Close()
-		return last
-	})
+	for _, listener := range s.Listeners {
+		server.OnEvent("/", listener.Bind())
+	}
 
 	server.OnError("/", func(s socketio.Conn, e error) {
 		fmt.Println("meet error:", e)

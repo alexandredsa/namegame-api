@@ -1,10 +1,10 @@
 package consume
 
 import (
-	"api.namegame.com/socket"
+	"api.namegame.com/socket/data"
 	socketio "github.com/googollee/go-socket.io"
 )
 
 type EventConsumer interface {
-	Bind(GameContext socket.GameContext) (string, func(socketio.Conn, string))
+	Bind(GameContext data.GameContext) (string, func(socketio.Conn, string))
 }
