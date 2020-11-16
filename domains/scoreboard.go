@@ -1,6 +1,6 @@
 package domains
 
 type Scoreboard struct {
-	UserScores []UserScore
-	RoomCode   string
+	UserScores []UserScore `json:"user_scores"`
+	RoomCode   string      `json:"room_code"`
 }

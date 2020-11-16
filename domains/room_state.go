@@ -5,16 +5,16 @@ import (
 )
 
 type Round struct {
-	Current  int8
-	Max      int8
-	Question Question
-	Winner   UserHunch
-	EndsAt   int32
+	Current  int8      `json:"current"`
+	Max      int8      `json:"max"`
+	Question Question  `json:"question"`
+	Winner   UserHunch `json:"winner"`
+	EndsAt   int32     `json:"ends_at"`
 }
 
 type RoomState struct {
-	Code  string
-	Round Round
+	Code  string `json:"code"`
+	Round Round  `json:"round"`
 }
 
 func (rs RoomState) GenerateCode() string {

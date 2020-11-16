@@ -1,7 +1,7 @@
 package domains
 
 type User struct {
-	Name     string
-	FCMToken string
-	State    string
+	Name     string `json:"name"`
+	FCMToken string `json:"-"`
+	State    string `json:"state"`
 }

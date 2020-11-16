@@ -23,6 +23,7 @@ func (r RoomService) GetByRoomCode(roomCode string) (domains.RoomState, domains.
 	if roomState.Round.EndsAt >= int32(time.Now().Unix()) {
 		bestHunch := r.HunchRoundRepository.CalculateBestHunch(roomCode)
 		roomState.Round.Winner = bestHunch
+		r.ScoreboardRepository.UpdateUserScorePoints(roomCode, bestHunch.User.FCMToken, 1)
 	}
 
 	return roomState, scoreboard

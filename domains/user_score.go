@@ -1,6 +1,6 @@
 package domains
 
 type UserScore struct {
-	User  User
-	Score int
+	User  User `json:"user"`
+	Score int  `json:"score"`
 }

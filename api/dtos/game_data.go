@@ -3,6 +3,6 @@ package dtos
 import "api.namegame.com/domains"
 
 type GameData struct {
-	Room       domains.RoomState
-	Scoreboard domains.Scoreboard
+	Room       domains.RoomState  `json:"room"`
+	Scoreboard domains.Scoreboard `json:"scoreboard"`
 }

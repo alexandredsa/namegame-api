@@ -1,6 +1,6 @@
 package domains
 
 type Question struct {
-	Name   string
-	Answer int
+	Name   string `json:"name"`
+	Answer int    `json:"answer"`
 }

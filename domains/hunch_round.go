@@ -1,12 +1,12 @@
 package domains
 
 type UserHunch struct {
-	User  User
-	Hunch int
+	User  User `json:"user"`
+	Hunch int  `json:"hunch"`
 }
 
 type HunchRound struct {
-	Name        int
-	Answer      int
-	UserHunches []UserHunch
+	Name        int         `json:"name"`
+	Answer      int         `json:"answer"`
+	UserHunches []UserHunch `json:"hunches"`
 }
