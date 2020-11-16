@@ -1,13 +1,23 @@
 package main
 
 import (
+	"log"
+
+	"api.namegame.com/messaging"
 	"api.namegame.com/socket"
 	"api.namegame.com/socket/data"
 	"api.namegame.com/socket/events/consume"
+	"github.com/joho/godotenv"
 )
 
 func main() {
-	initSocketServer()
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
+	messaging.FirebaseConfig{}.Init()
+	// initSocketServer()
 }
 
 func initSocketServer() {

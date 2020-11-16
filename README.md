@@ -2,12 +2,119 @@
 
 ## About
 
+## REST
 
-## Socket
+- `POST` - `/rooms/create`
 
-### Events
+```
+Headers: {
+    "FCM_USER_TOKEN": "dkQJJ-3BLbg:APA91bFtqfdcku1WMPX2CkuCtJO9EomUucrh-aFs3X3mMJj636MPR7jbkRY"
+}
+```
+```
+{
+    "username": "EdilsonCapetinha"
+}
+```
 
-### Consume
+- `Response`
+```
+{
+  "room": {
+    "code": "TJKLAL"
+  },
+  "scoreboard": [
+    {
+      "user": {
+        "name": "RenataFan",
+        "state": "READY"
+      },
+      "score": 0
+    },
+    {
+      "user": {
+        "name": "CraqueNeto",
+        "state": "PENDING"
+      },
+      "score": 0
+    }
+  ]
+}
+```
+
+- `POST` - `/rooms/:room_code/join`
+```
+Headers: {
+    "FCM_USER_TOKEN": "dkQJJ-3BLbg:APA91bFtqfdcku1WMPX2CkuCtJO9EomUucrh-aFs3X3mMJj636MPR7jbkRY"
+}
+```
+```
+{
+    "username": "DenilsonShow",
+}
+```
+
+- `Response`
+```
+{
+  "room": {
+    "code": "TJKLAL"
+  },
+  "scoreboard": [
+    {
+      "user": {
+        "name": "RenataFan",
+        "state": "READY"
+      },
+      "score": 120
+    },
+    {
+      "user": {
+        "name": "CraqueNeto",
+        "state": "PENDING"
+      },
+      "score": 230
+    },
+    {
+      "user": {
+        "name": "RonaldoCareca",
+        "state": "WAITING"
+      },
+      "score": 0
+    }
+  ]
+}
+```
+
+
+- `POST` - `/rooms/:room_code/hunches`
+```
+Headers: {
+    "FCM_USER_TOKEN": "dkQJJ-3BLbg:APA91bFtqfdcku1WMPX2CkuCtJO9EomUucrh-aFs3X3mMJj636MPR7jbkRY"
+}
+```
+```
+{
+    "hunch": 31000
+}
+```
+
+- `PUT` - `/rooms/:room_code/players/me`
+```
+Headers: {
+    "FCM_USER_TOKEN": "dkQJJ-3BLbg:APA91bFtqfdcku1WMPX2CkuCtJO9EomUucrh-aFs3X3mMJj636MPR7jbkRY"
+}
+```
+```
+{
+    "state": "READY"
+}
+```
+
+
+## Firebase Cloud Messaging
+
+### Messages
 
 - `ROOM_STATE`
 ```
@@ -35,64 +142,21 @@
 - `SCOREBOARD`
 ```
 {
-    [
-        {
-            "user": {
-                "name": "RenataFan"
-                "state": "READY"
-            },
-            "score": 200
-        },
-        {
-            "user": {
-                "name": "CraqueNeto",
-                "state: "PENDING"
-            },
-            "score": 190
-        },
-    ]
+  "scoreboard": [
+    {
+      "user": {
+        "name": "RenataFan",
+        "state": "READY"
+      },
+      "score": 200
+    },
+    {
+      "user": {
+        "name": "CraqueNeto",
+        "state": "PENDING"
+      },
+      "score": 190
+    }
+  ]
 }
 ```
-
-### Produce
-
-- `ROOM_CREATE`
-```
-{
-    "username": "EdilsonCapetinha"
-}
-```
-
-- `ROOM_JOIN`
-```
-{
-    "username": "DenilsonShow",
-    "room_code": "TJAKLL"
-}
-```
-
-- `HUNCH_CREATE`
-```
-{
-    "hunch": 31000
-}
-```
-
-- `PLAYER_STATE_UPDATE`
-```
-{
-    "state": "READY"
-}
-```
-
-
-### Flow example: 
-
-- Emit -> `ROOM_CREATE`
-- `ROOM_STATE` <- Receive
-- Emit -> `PLAYER_STATE_UPDATE`
-- `SCOREBOARD` <- Receive - [_Multiple times_]
-- `ROOM_STATE` <- Receive
-- Emit -> `HUNCH_CREATE`
-- `ROOM_STATE` <- Receive
-- `SCOREBOARD` <- Receive
