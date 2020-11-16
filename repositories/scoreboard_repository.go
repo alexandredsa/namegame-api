@@ -8,14 +8,24 @@ type ScoreboardRepository struct {
 	Scoreboards map[string]domains.Scoreboard
 }
 
-func (s ScoreboardRepository) UpdateUserScoreState(roomCode string, fcmToken string, state string) {
+func (s ScoreboardRepository) UpdateUserScoreState(roomCode string, fcmToken string, state string) (isRoomReady bool) {
 	scoreboard := s.Scoreboards[roomCode]
+	isRoomReady = true
 	for i := 0; i < len(scoreboard.UserScores); i++ {
 		if scoreboard.UserScores[i].User.FCMToken == fcmToken {
 			scoreboard.UserScores[i].User.State = state
-			return
+
+			if !isRoomReady {
+				return false
+			}
+		}
+
+		if scoreboard.UserScores[i].User.State == "PENDING" {
+			isRoomReady = false
 		}
 	}
+
+	return isRoomReady
 }
 func (s ScoreboardRepository) UpdateUserScorePoints(roomCode string, fcmToken string, pointsToAdd int) {
 	scoreboard := s.Scoreboards[roomCode]

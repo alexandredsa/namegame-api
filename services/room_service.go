@@ -9,11 +9,12 @@ import (
 )
 
 type RoomService struct {
-	HunchRoundRepository repositories.HunchRoundRepository
-	RoomStateRepository  repositories.RoomStateRepository
-	ScoreboardRepository repositories.ScoreboardRepository
-	RoomStateEmitter     emitters.RoomState
-	ScoreboardEmitter    emitters.Scoreboard
+	HunchRoundRepository     repositories.HunchRoundRepository
+	NameStatisticsRepository repositories.NameStatisticsRepository
+	RoomStateRepository      repositories.RoomStateRepository
+	ScoreboardRepository     repositories.ScoreboardRepository
+	RoomStateEmitter         emitters.RoomState
+	ScoreboardEmitter        emitters.Scoreboard
 }
 
 func (r RoomService) GetByRoomCode(roomCode string) (domains.RoomState, domains.Scoreboard) {
@@ -73,9 +74,34 @@ func (r RoomService) HunchCreate(fcmToken string, roomCode string, hunch int) (e
 	return err
 }
 
+func (r RoomService) CreateNextRound(roomCode string) {
+	roomState := r.RoomStateRepository.FindByRoomCode(roomCode)
+	round := domains.Round{}
+	if roomState.Round.Current == 0 {
+		round.Current = 1
+		round.Max = 10
+	} else {
+		round.Current = roomState.Round.Current + 1
+	}
+
+	nameStatistics := r.NameStatisticsRepository.Shuffle()
+	round.Question = domains.
+		Question{Name: nameStatistics.Name,
+		Answer: nameStatistics.Total}
+
+	roomState.Round = round
+	r.RoomStateRepository.Add(roomState)
+}
+
 func (r RoomService) UpdatePlayerState(fcmToken string, state string, roomCode string) (err error) {
-	r.ScoreboardRepository.UpdateUserScoreState(roomCode, fcmToken, state)
-	r.RoomStateEmitter.Run(roomCode)
+	isRoomReady := r.ScoreboardRepository.UpdateUserScoreState(roomCode, fcmToken, state)
 	r.ScoreboardEmitter.Run(roomCode)
+
+	if isRoomReady {
+		r.CreateNextRound(roomCode)
+	}
+
+	r.RoomStateEmitter.Run(roomCode)
+
 	return err
 }
