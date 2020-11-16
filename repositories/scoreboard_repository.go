@@ -10,18 +10,19 @@ type ScoreboardRepository struct {
 
 func (s ScoreboardRepository) UpdateUserScoreState(roomCode string, fcmToken string, state string) {
 	scoreboard := s.Scoreboards[roomCode]
-	for _, userScore := range scoreboard.UserScores {
-		if userScore.User.FCMToken == fcmToken {
-			userScore.User.State = state
+	for i := 0; i < len(scoreboard.UserScores); i++ {
+		if scoreboard.UserScores[i].User.FCMToken == fcmToken {
+			scoreboard.UserScores[i].User.State = state
 			return
 		}
 	}
 }
 func (s ScoreboardRepository) UpdateUserScorePoints(roomCode string, fcmToken string, pointsToAdd int) {
 	scoreboard := s.Scoreboards[roomCode]
-	for _, userScore := range scoreboard.UserScores {
-		if userScore.User.FCMToken == fcmToken {
-			userScore.Score = userScore.Score + pointsToAdd
+	for i := 0; i < len(scoreboard.UserScores); i++ {
+		if scoreboard.UserScores[i].User.FCMToken == fcmToken {
+			currentScore := scoreboard.UserScores[i].Score
+			scoreboard.UserScores[i].Score = currentScore + pointsToAdd
 			return
 		}
 	}

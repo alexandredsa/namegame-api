@@ -2,8 +2,6 @@ package domains
 
 import (
 	"math/rand"
-
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type Round struct {
@@ -11,7 +9,7 @@ type Round struct {
 	Max      int8
 	Question Question
 	Winner   UserHunch
-	EndsAt   primitive.Timestamp
+	EndsAt   int32
 }
 
 type RoomState struct {

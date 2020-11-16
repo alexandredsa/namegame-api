@@ -16,7 +16,7 @@ func (h HunchRoundRepository) AddUserHunch(user domains.User, roomCode string, h
 	hunchRound.UserHunches = append(hunchRound.UserHunches, userHunch)
 }
 
-func (h HunchRoundRepository) CalculateBestHunch(fcmToken string, roomCode string) domains.UserHunch {
+func (h HunchRoundRepository) CalculateBestHunch(roomCode string) domains.UserHunch {
 	var bestUserHunch domains.UserHunch
 	hunchRound := h.HunchRounds[roomCode]
 	for _, userHunch := range hunchRound.UserHunches {
