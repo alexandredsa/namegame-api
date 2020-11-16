@@ -22,7 +22,7 @@ func (r RoomService) GetByRoomCode(roomCode string) (domains.RoomState, domains.
 
 func (r RoomService) Create(fcmToken string, username string) (domains.RoomState, domains.Scoreboard) {
 	roomState := domains.RoomState{}
-	roomState.UpdateCode()
+	roomState.Code = roomState.GenerateCode()
 
 	userScores := make([]domains.UserScore, 0)
 	userScores = append(userScores, domains.UserScore{Score: 0,

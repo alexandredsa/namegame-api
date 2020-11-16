@@ -24,7 +24,7 @@ func (r *RoomController) Join(ctx *gin.Context) {
 	fcmToken := ctx.Request.Header.Get("FCM_USER_TOKEN")
 	payload := dtos.RoomJoin{}
 	ctx.ShouldBind(&payload)
-	roomState, scoreboard := r.RoomService.Join(fcmToken, roomCode, payload.Username)
+	roomState, scoreboard := r.RoomService.Join(fcmToken, payload.Username, roomCode)
 
 	gameData := dtos.GameData{Room: roomState, Scoreboard: scoreboard}
 	ctx.JSON(201, gameData)

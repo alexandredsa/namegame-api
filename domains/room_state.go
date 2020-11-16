@@ -19,12 +19,12 @@ type RoomState struct {
 	Round Round
 }
 
-func (rs RoomState) UpdateCode() {
+func (rs RoomState) GenerateCode() string {
 	var letterRunes = []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
 	b := make([]rune, 6)
 	for i := range b {
 		b[i] = letterRunes[rand.Intn(len(letterRunes))]
 	}
-	rs.Code = string(b)
+	return string(b)
 }
