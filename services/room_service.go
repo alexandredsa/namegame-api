@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"api.namegame.com/domains"
+	"api.namegame.com/jobs"
 	"api.namegame.com/messaging/emitters"
 	"api.namegame.com/repositories"
 )
@@ -15,18 +16,12 @@ type RoomService struct {
 	ScoreboardRepository     repositories.ScoreboardRepository
 	RoomStateEmitter         emitters.RoomState
 	ScoreboardEmitter        emitters.Scoreboard
+	RoundJob                 jobs.RoundJob
 }
 
 func (r RoomService) GetByRoomCode(roomCode string) (domains.RoomState, domains.Scoreboard) {
 	roomState := r.RoomStateRepository.FindByRoomCode(roomCode)
 	scoreboard := r.ScoreboardRepository.FindByRoomCode(roomCode)
-
-	if roomState.Round.EndsAt >= int32(time.Now().Unix()) {
-		bestHunch := r.HunchRoundRepository.CalculateBestHunch(roomCode)
-		roomState.Round.Winner = bestHunch
-		r.ScoreboardRepository.UpdateUserScorePoints(roomCode, bestHunch.User.FCMToken, 1)
-	}
-
 	return roomState, scoreboard
 }
 
@@ -74,7 +69,7 @@ func (r RoomService) HunchCreate(fcmToken string, roomCode string, hunch int) (e
 	return err
 }
 
-func (r RoomService) CreateNextRound(roomCode string) {
+func (r RoomService) CreateNextRound(roomCode string) domains.RoomState {
 	roomState := r.RoomStateRepository.FindByRoomCode(roomCode)
 	round := domains.Round{}
 	if roomState.Round.Current == 0 {
@@ -89,8 +84,11 @@ func (r RoomService) CreateNextRound(roomCode string) {
 		Question{Name: nameStatistics.Name,
 		Answer: nameStatistics.Total}
 
+	endsAt := time.Now().Local().Add(time.Second * time.Duration(30))
+	round.EndsAt = int32(endsAt.Unix())
 	roomState.Round = round
 	r.RoomStateRepository.Add(roomState)
+	return roomState
 }
 
 func (r RoomService) UpdatePlayerState(fcmToken string, state string, roomCode string) (err error) {
@@ -98,7 +96,8 @@ func (r RoomService) UpdatePlayerState(fcmToken string, state string, roomCode s
 	r.ScoreboardEmitter.Run(roomCode)
 
 	if isRoomReady {
-		r.CreateNextRound(roomCode)
+		roomState := r.CreateNextRound(roomCode)
+		go r.RoundJob.FinishRound(roomState)
 	}
 
 	r.RoomStateEmitter.Run(roomCode)

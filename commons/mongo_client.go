@@ -10,7 +10,7 @@ type MongoClient struct {
 	DB     *mongo.Database
 }
 
-func (m *MongoClient) GetDatabase(mongoURI string, databaseName string) *mongo.Database {
+func (m MongoClient) GetDatabase(mongoURI string, databaseName string) *mongo.Database {
 
 	if m.DB != nil {
 		return m.DB

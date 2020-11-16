@@ -7,7 +7,9 @@ import (
 	"api.namegame.com/api"
 	"api.namegame.com/api/controllers"
 	"api.namegame.com/api/routes"
+	"api.namegame.com/commons"
 	"api.namegame.com/domains"
+	"api.namegame.com/jobs"
 	"api.namegame.com/messaging"
 	"api.namegame.com/messaging/emitters"
 	"api.namegame.com/repositories"
@@ -29,6 +31,13 @@ func initAPI() {
 
 	if err != nil {
 		panic(err)
+	}
+
+	mongoClient := commons.MongoClient{}
+	mongoDatabase := mongoClient.GetDatabase("mongodb+srv://admin:adminvitor@cluster0.kklu5.mongodb.net/name-game?retryWrites=true&w=majority",
+		"name-game")
+	nameStatisticsRepository := repositories.NameStatisticsRepository{
+		DB: mongoDatabase,
 	}
 
 	hunchRoundRepository := repositories.HunchRoundRepository{
@@ -53,13 +62,22 @@ func initAPI() {
 		ScoreboardRepository: scoreboardRepository,
 		FirebaseClient:       firebaseClient,
 	}
-	roomService := services.RoomService{
-		HunchRoundRepository: hunchRoundRepository,
-		RoomStateRepository:  roomStateRepository,
-		ScoreboardRepository: scoreboardRepository,
-		ScoreboardEmitter:    scoreboardEmitter,
+
+	roundJob := jobs.RoundJob{HunchRoundRepository: hunchRoundRepository,
 		RoomStateEmitter:     roomStateEmitter,
+		ScoreboardRepository: scoreboardRepository,
 	}
+
+	roomService := services.RoomService{
+		HunchRoundRepository:     hunchRoundRepository,
+		RoomStateRepository:      roomStateRepository,
+		ScoreboardRepository:     scoreboardRepository,
+		ScoreboardEmitter:        scoreboardEmitter,
+		RoomStateEmitter:         roomStateEmitter,
+		NameStatisticsRepository: nameStatisticsRepository,
+		RoundJob:                 roundJob,
+	}
+
 	roomController := controllers.RoomController{RoomService: roomService}
 
 	baseRoutes := make([]routes.BaseRoute, 0)
