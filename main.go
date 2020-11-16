@@ -2,11 +2,16 @@ package main
 
 import (
 	"log"
+	"os"
 
+	"api.namegame.com/api"
+	"api.namegame.com/api/controllers"
+	"api.namegame.com/api/routes"
+	"api.namegame.com/domains"
 	"api.namegame.com/messaging"
-	"api.namegame.com/socket"
-	"api.namegame.com/socket/data"
-	"api.namegame.com/socket/events/consume"
+	"api.namegame.com/messaging/emitters"
+	"api.namegame.com/repositories"
+	"api.namegame.com/services"
 	"github.com/joho/godotenv"
 )
 
@@ -16,17 +21,52 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 
-	messaging.FirebaseConfig{}.Init()
-	// initSocketServer()
+	initAPI()
 }
 
-func initSocketServer() {
-	sessions := make(map[string]data.GameContext, 0)
-	listeners := make([]consume.EventConsumer, 0)
-	listeners = append(listeners, consume.RoomCreate{})
-	listeners = append(listeners, consume.RoomJoin{})
-	listeners = append(listeners, consume.PlayerStateUpdate{})
-	listeners = append(listeners, consume.HunchCreate{})
-	server := socket.Server{Listeners: listeners, Sessions: sessions}
-	defer server.Start()
+func initAPI() {
+	firebaseClient, err := messaging.FirebaseConfig{}.CreateClient()
+
+	if err != nil {
+		panic(err)
+	}
+
+	hunchRoundRepository := repositories.HunchRoundRepository{
+		HunchRounds: make(map[string]domains.HunchRound, 0),
+	}
+
+	roomStateRepository := repositories.RoomStateRepository{
+		RoomStates: make(map[string]domains.RoomState, 0),
+	}
+
+	scoreboardRepository := repositories.ScoreboardRepository{
+		Scoreboards: make(map[string]domains.Scoreboard, 0),
+	}
+
+	roomStateEmitter := emitters.RoomState{
+		RoomStateRepository:  roomStateRepository,
+		ScoreboardRepository: scoreboardRepository,
+		FirebaseClient:       firebaseClient,
+	}
+
+	scoreboardEmitter := emitters.Scoreboard{
+		ScoreboardRepository: scoreboardRepository,
+		FirebaseClient:       firebaseClient,
+	}
+	roomService := services.RoomService{
+		HunchRoundRepository: hunchRoundRepository,
+		RoomStateRepository:  roomStateRepository,
+		ScoreboardRepository: scoreboardRepository,
+		ScoreboardEmitter:    scoreboardEmitter,
+		RoomStateEmitter:     roomStateEmitter,
+	}
+	roomController := controllers.RoomController{RoomService: roomService}
+
+	baseRoutes := make([]routes.BaseRoute, 0)
+	roomRoute := routes.RoomRoute{RoomController: roomController}
+	baseRoutes = append(baseRoutes, roomRoute)
+	server := api.Server{Routes: baseRoutes}
+
+	r := server.SetupRoutes()
+	r.Run(":" + os.Getenv("APP_PORT"))
 }

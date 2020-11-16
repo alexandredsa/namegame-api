@@ -7,10 +7,17 @@ import (
 )
 
 type RoomService struct {
+	HunchRoundRepository repositories.HunchRoundRepository
 	RoomStateRepository  repositories.RoomStateRepository
 	ScoreboardRepository repositories.ScoreboardRepository
 	RoomStateEmitter     emitters.RoomState
 	ScoreboardEmitter    emitters.Scoreboard
+}
+
+func (r RoomService) GetByRoomCode(roomCode string) (domains.RoomState, domains.Scoreboard) {
+	roomState := r.RoomStateRepository.FindByRoomCode(roomCode)
+	scoreboard := r.ScoreboardRepository.FindByRoomCode(roomCode)
+	return roomState, scoreboard
 }
 
 func (r RoomService) Create(fcmToken string, username string) (domains.RoomState, domains.Scoreboard) {
@@ -40,7 +47,21 @@ func (r RoomService) Join(fcmToken string, username string, roomCode string) (do
 	r.ScoreboardRepository.Add(scoreboard)
 	r.RoomStateEmitter.Run(roomCode)
 	return roomState, scoreboard
+}
 
+func (r RoomService) HunchCreate(fcmToken string, roomCode string, hunch int) (err error) {
+	scoreboard := r.ScoreboardRepository.FindByRoomCode(roomCode)
+	var user domains.User
+
+	for _, userScore := range scoreboard.UserScores {
+		if userScore.User.FCMToken == fcmToken {
+			user = userScore.User
+			return
+		}
+	}
+
+	r.HunchRoundRepository.AddUserHunch(user, roomCode, hunch)
+	return err
 }
 
 func (r RoomService) UpdatePlayerState(fcmToken string, state string, roomCode string) (err error) {

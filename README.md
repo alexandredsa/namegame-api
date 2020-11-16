@@ -42,7 +42,7 @@ Headers: {
 }
 ```
 
-- `POST` - `/rooms/:room_code/join`
+- `POST` - `/rooms/join/:room_code`
 ```
 Headers: {
     "FCM_USER_TOKEN": "dkQJJ-3BLbg:APA91bFtqfdcku1WMPX2CkuCtJO9EomUucrh-aFs3X3mMJj636MPR7jbkRY"
@@ -86,8 +86,38 @@ Headers: {
 }
 ```
 
+- `GET` - `/rooms/:room_code`
+```
+Headers: {
+    "FCM_USER_TOKEN": "dkQJJ-3BLbg:APA91bFtqfdcku1WMPX2CkuCtJO9EomUucrh-aFs3X3mMJj636MPR7jbkRY"
+}
+```
 
-- `POST` - `/rooms/:room_code/hunches`
+- `Response`
+```
+{
+
+	"code": "TJKLAL",
+	"round": {
+		"current": 1,
+		"max": 10,
+		"question": {
+			"name": "Flávio",
+		    "answer": 34300,
+		},
+		"winner": {
+			"user": {
+				"name": "CraqueNeto"
+			},
+			"hunch": 31000
+		},
+        "ends_at": 1605392362
+	}
+}
+```
+
+
+- `POST` - `/rooms/hunches/:room_code`
 ```
 Headers: {
     "FCM_USER_TOKEN": "dkQJJ-3BLbg:APA91bFtqfdcku1WMPX2CkuCtJO9EomUucrh-aFs3X3mMJj636MPR7jbkRY"
@@ -99,7 +129,7 @@ Headers: {
 }
 ```
 
-- `PUT` - `/rooms/:room_code/players/me`
+- `PUT` - `/rooms/players/:room_code/me`
 ```
 Headers: {
     "FCM_USER_TOKEN": "dkQJJ-3BLbg:APA91bFtqfdcku1WMPX2CkuCtJO9EomUucrh-aFs3X3mMJj636MPR7jbkRY"
@@ -114,6 +144,12 @@ Headers: {
 
 ## Firebase Cloud Messaging
 
+### Data Structure
+
+#### `KEYS`
+
+- JSON_DATA
+- MESSAGE_TYPE [`ROOM_STATE` | `SCOREBOARD`]
 ### Messages
 
 - `ROOM_STATE`

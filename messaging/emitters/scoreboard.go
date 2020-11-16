@@ -2,31 +2,35 @@ package emitters
 
 import (
 	"context"
-	"fmt"
-	"log"
+	"encoding/json"
 
+	"api.namegame.com/repositories"
 	"firebase.google.com/go/messaging"
 )
 
 type Scoreboard struct {
-	FirebaseClient *messaging.Client
+	FirebaseClient       *messaging.Client
+	ScoreboardRepository repositories.ScoreboardRepository
 }
 
-func (s Scoreboard) Run(RoomCode string) (err error) {
+func (s Scoreboard) Run(roomCode string) error {
 	ctx := context.Background()
-	message := &messaging.Message{
-		Data: map[string]string{
-			"score": "850",
-			"time":  "2:45",
-		},
-		Token: registrationToken,
+	scoreboard := s.ScoreboardRepository.FindByRoomCode(roomCode)
+	scoreboardJSON, err := json.Marshal(scoreboard)
+
+	if err != nil {
+		panic(err)
 	}
 
-	response, err := client.Send(ctx, message)
-	if err != nil {
-		log.Fatalln(err)
+	for _, userScore := range scoreboard.UserScores {
+		go s.FirebaseClient.Send(ctx, &messaging.Message{
+			Data: map[string]string{
+				"json_data":    string(scoreboardJSON),
+				"message_type": "SCOREBOARD",
+			},
+			Token: userScore.User.FCMToken,
+		})
 	}
-	fmt.Println("Successfully sent message:", response)
-	s.FirebaseClient.Send(ctx)
+
 	return err
 }
