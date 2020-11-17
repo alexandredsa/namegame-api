@@ -34,7 +34,7 @@ func initAPI() {
 	}
 
 	mongoClient := commons.MongoClient{}
-	mongoDatabase := mongoClient.GetDatabase("mongodb+srv://admin:adminvitor@cluster0.kklu5.mongodb.net/name-game?retryWrites=true&w=majority",
+	mongoDatabase := mongoClient.GetDatabase(os.Getenv("MONGO_URI"),
 		"name-game")
 	nameStatisticsRepository := repositories.NameStatisticsRepository{
 		DB: mongoDatabase,

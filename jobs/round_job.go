@@ -15,8 +15,9 @@ type RoundJob struct {
 }
 
 func (r RoundJob) FinishRound(roomState domains.RoomState) {
-	sleepTime := roomState.Round.EndsAt - int32(time.Now().Unix())
-	time.Sleep(time.Duration(sleepTime) * time.Millisecond)
+	// sleepTime := roomState.Round.EndsAt - int32(time.Now().Unix())
+	// time.Sleep(time.Duration(sleepTime) * time.Millisecond)
+	time.Sleep(10 * time.Second)
 
 	bestHunch := r.HunchRoundRepository.CalculateBestHunch(roomState.Code)
 	roomState.Round.Winner = bestHunch

@@ -82,7 +82,7 @@ func (r RoomService) CreateNextRound(roomCode string) domains.RoomState {
 	nameStatistics := r.NameStatisticsRepository.Shuffle()
 	round.Question = domains.
 		Question{Name: nameStatistics.Name,
-		Answer: nameStatistics.Total}
+		Answer: int(nameStatistics.Total)}
 
 	endsAt := time.Now().Local().Add(time.Second * time.Duration(30))
 	round.EndsAt = int32(endsAt.Unix())
