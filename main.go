@@ -66,6 +66,7 @@ func initAPI() {
 	roundJob := jobs.RoundJob{HunchRoundRepository: hunchRoundRepository,
 		RoomStateEmitter:     roomStateEmitter,
 		ScoreboardRepository: scoreboardRepository,
+		RoomStateRepository:  roomStateRepository,
 	}
 
 	roomService := services.RoomService{

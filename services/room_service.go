@@ -61,7 +61,7 @@ func (r RoomService) HunchCreate(fcmToken string, roomCode string, hunch int) (e
 	for _, userScore := range scoreboard.UserScores {
 		if userScore.User.FCMToken == fcmToken {
 			user = userScore.User
-			return
+			break
 		}
 	}
 

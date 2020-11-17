@@ -27,6 +27,14 @@ func (s ScoreboardRepository) UpdateUserScoreState(roomCode string, fcmToken str
 
 	return isRoomReady
 }
+
+func (s ScoreboardRepository) ResetUserScoreState(roomCode string) {
+	scoreboard := s.Scoreboards[roomCode]
+	for i := 0; i < len(scoreboard.UserScores); i++ {
+		scoreboard.UserScores[i].User.State = "PENDING"
+	}
+}
+
 func (s ScoreboardRepository) UpdateUserScorePoints(roomCode string, fcmToken string, pointsToAdd int) {
 	scoreboard := s.Scoreboards[roomCode]
 	for i := 0; i < len(scoreboard.UserScores); i++ {
