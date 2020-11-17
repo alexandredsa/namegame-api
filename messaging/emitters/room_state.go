@@ -3,6 +3,7 @@ package emitters
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 
 	"api.namegame.com/repositories"
 	"firebase.google.com/go/messaging"
@@ -26,6 +27,7 @@ func (r RoomState) Run(roomCode string) (err error) {
 	}
 
 	for _, userScore := range scoreboard.UserScores {
+		fmt.Println(fmt.Sprintf("Sending %v to token %v", string(roomStateJSON), userScore.User.FCMToken))
 		go r.FirebaseClient.Send(ctx, &messaging.Message{
 			Data: map[string]string{
 				"json_data":    string(roomStateJSON),

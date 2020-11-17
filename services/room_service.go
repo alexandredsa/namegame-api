@@ -22,6 +22,7 @@ type RoomService struct {
 func (r RoomService) GetByRoomCode(roomCode string) (domains.RoomState, domains.Scoreboard) {
 	roomState := r.RoomStateRepository.FindByRoomCode(roomCode)
 	scoreboard := r.ScoreboardRepository.FindByRoomCode(roomCode)
+	roomState.Round.Question.Answer = 0
 	return roomState, scoreboard
 }
 
